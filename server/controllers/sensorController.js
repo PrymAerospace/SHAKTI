@@ -1,67 +1,36 @@
+
+
 // import { SensorData } from "../models/Sensors.js";
 // import { io } from "../index.js";
 
-// /**
-//  * @desc Generate and continuously log dummy sensor data for a specific drone
-//  */
-// const generateDummySensorData = (droneId) => {
-//     setInterval(async () => {
-//         try {
-//             const dummyData = {
-//                 droneId,
-//                 accelX: (Math.random() * 10).toFixed(2),
-//                 accelY: (Math.random() * 10).toFixed(2),
-//                 accelZ: (Math.random() * 10).toFixed(2),
-//                 roll: (Math.random() * 360 - 180).toFixed(2),
-//                 pitch: (Math.random() * 360 - 180).toFixed(2),
-//                 yaw: (Math.random() * 360 - 180).toFixed(2),
-//                 bmpTemp: (Math.random() * 50 + 10).toFixed(2),
-//                 pressure: (Math.random() * 20 + 980).toFixed(2),
-//                 RTC_Time: new Date().toISOString(),
-//                 Latitude: (Math.random() * 180 - 90).toFixed(6),
-//                 Longitude: (Math.random() * 360 - 180).toFixed(6),
-//                 Altitude: (Math.random() * 500).toFixed(2),
-//             };
 
-//             console.log("Generated Dummy Sensor Data:", dummyData);
-
-//             // Emit data via WebSocket
-//             io.emit("updateSensorData", dummyData);
-
-//             // Store in database every second
-//             const sensorData = new SensorData(dummyData);
-//             await sensorData.save();
-//         } catch (error) {
-//             console.error("Error generating dummy sensor data:", error);
-//         }
-//     }, 1000); // Generates data every second
-// };
-
-// const receiveSensorData = async (req, res) => {
+// export const receiveSensorData = async (req, res) => {
 //     try {
 //         console.log("Received Sensor Data:", req.body);
 
-//         if (!req.body || !req.body.droneId) {
-//             return res.status(400).json({ message: "Drone ID is required" });
+//         if (!req.body || !req.body.droneUIN) {
+//             return res.status(400).json({ message: "Drone UIN is required" });
 //         }
 
 //         const {
-//             droneId, accelX, accelY, accelZ,
+//             droneUIN, accelX, accelY, accelZ,
 //             roll, pitch, yaw,
 //             bmpTemp, pressure,
-//             RTC_Time, Latitude, Longitude, Altitude
+//             RTC_Time, Latitude, Longitude, Altitude,
+//             battery
 //         } = req.body;
 
+//         console.log(`Drone UIN: ${droneUIN}, Lat: ${Latitude}, Lng: ${Longitude}, Battery: ${battery}%`);
+
 //         const newData = new SensorData({
-//             droneId, accelX, accelY, accelZ,
+//             droneUIN, accelX, accelY, accelZ,
 //             roll, pitch, yaw,
 //             bmpTemp, pressure,
-//             RTC_Time, Latitude, Longitude, Altitude
+//             RTC_Time, Latitude, Longitude, Altitude,
+//             battery
 //         });
 
 //         await newData.save();
-
-//         // Emit real-time update
 //         io.emit("updateSensorData", newData);
 
 //         res.status(201).json({ message: "Sensor data received and saved", data: newData });
@@ -71,25 +40,15 @@
 //     }
 // };
 
-// /**
-//  * @desc Fetch the latest sensor data for a specific drone
-//  */
-// const getLatestSensorData = async (req, res) => {
+// export const getLatestSensorDataByDrone = async (req, res) => {
 //     try {
-//         const { droneId } = req.params;
-
-//         if (!droneId) {
-//             return res.status(400).json({ message: "Drone ID is required" });
-//         }
-
-//         let latestData = await SensorData.find({ droneId })
+//         const { droneUIN } = req.params;
+//         const latestData = await SensorData.find({ droneUIN })
 //             .sort({ createdAt: -1 })
-//             .limit(10);
+//             .limit(10); // लेटेस्ट 10 डेटा पॉइंट्स
 
-//         if (latestData.length === 0) {
-//             console.log(`No data found for drone ${droneId}. Generating dummy data...`);
-//             generateDummySensorData(droneId);
-//             return res.status(200).json({ message: "Dummy data generation started" });
+//         if (!latestData.length) {
+//             return res.status(404).json({ message: "No sensor data found for this drone" });
 //         }
 
 //         res.json(latestData);
@@ -99,13 +58,9 @@
 //     }
 // };
 
-// export { receiveSensorData, getLatestSensorData, generateDummySensorData };
-
-
 
 import { SensorData } from "../models/Sensors.js";
 import { io } from "../index.js";
-
 
 export const receiveSensorData = async (req, res) => {
     try {
@@ -119,15 +74,18 @@ export const receiveSensorData = async (req, res) => {
             accelX, accelY, accelZ,
             roll, pitch, yaw,
             bmpTemp, pressure,
-            RTC_Time, Latitude, Longitude, Altitude
+            RTC_Time, Latitude, Longitude, Altitude,
+            battery // Added battery status
         } = req.body;
 
-        console.log(`Received Coordinates: Lat: ${Latitude}, Lng: ${Longitude}`);
+        console.log(`Received Coordinates: Lat: ${Latitude}, Lng: ${Longitude}, Battery: ${battery}%`);
+
         const newData = new SensorData({
             accelX, accelY, accelZ,
             roll, pitch, yaw,
             bmpTemp, pressure,
-            RTC_Time, Latitude, Longitude, Altitude
+            RTC_Time, Latitude, Longitude, Altitude,
+            battery // Store battery status
         });
 
         await newData.save();
@@ -140,8 +98,6 @@ export const receiveSensorData = async (req, res) => {
     }
 };
 
-
-// Fetch the latest sensor data
 export const getLatestSensorData = async (req, res) => {
     try {
         const latestData = await SensorData.find().sort({ createdAt: -1 }).limit(10);
@@ -151,5 +107,3 @@ export const getLatestSensorData = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 };
-
-// export { receiveSensorData, getLatestSensorData };

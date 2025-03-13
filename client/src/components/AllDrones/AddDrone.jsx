@@ -1,148 +1,130 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import axios from "axios";
 
 const AddDrone = () => {
     const [drone, setDrone] = useState({
-        uin: "", // Unique Drone ID
+        uin: "",
         droneName: "",
-        location: "",
-        pilotName: "",
-        owner: "",
-        phone: "",
         droneStatus: "Active",
+        droneType: "",
+        manufacture: "",
+        application: "",
+        coverageArea: "",
+        controlRange: "",
+        gpsPositioning: false,
+        weatherResistance: "",
+        maxTakeoffWeight: "",
+        payloadCapacity: "",
+        spraySystem: "",
+        batteryCapacity: "",
+        sprayWidth: "",
+        numberOfNozzles: "",
+        flightTimePerBattery: "",
+        chargingTimePerBattery: "",
+        owner: "",
+        location: "",
+        phone: "",
+        purchaseDate: "",
+        droneSerialNumber: "",
+        vendor: "",
+        batteryWarranty: "",
+        maintenanceSchedule: "",
+        pilotName: "",
+        pilotCertificationNumber: "",
+        trainingLevel: "",
+        insuranceCoverage: "",
+        image: ""
     });
+
     const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState("");
 
     const handleChange = (e) => {
-        setDrone({ ...drone, [e.target.name]: e.target.value });
+        const { name, value, type, checked } = e.target;
+        setDrone({
+            ...drone,
+            [name]: type === "number" ? Number(value) : type === "checkbox" ? checked : value
+        });
+    };
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setDrone({ ...drone, image: reader.result });
+        };
+        if (file) reader.readAsDataURL(file);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setMessage("");
-
         try {
-            const response = await fetch("http://192.168.31.68:9000/api/drones", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(drone),
+            await axios.post("http://localhost:8000/api/drones", drone);
+            alert("Drone added successfully!");
+            setDrone({
+                uin: "",
+                droneName: "",
+                droneStatus: "Active",
+                droneType: "",
+                manufacture: "",
+                application: "",
+                coverageArea: "",
+                controlRange: "",
+                gpsPositioning: false,
+                weatherResistance: "",
+                maxTakeoffWeight: "",
+                payloadCapacity: "",
+                spraySystem: "",
+                batteryCapacity: "",
+                sprayWidth: "",
+                numberOfNozzles: "",
+                flightTimePerBattery: "",
+                chargingTimePerBattery: "",
+                owner: "",
+                location: "",
+                phone: "",
+                purchaseDate: "",
+                droneSerialNumber: "",
+                vendor: "",
+                batteryWarranty: "",
+                maintenanceSchedule: "",
+                pilotName: "",
+                pilotCertificationNumber: "",
+                trainingLevel: "",
+                insuranceCoverage: "",
+                image: ""
             });
-            
-            const data = await response.json();
-            if (data.success) {
-                setMessage("Drone added successfully!");
-                setDrone({
-                    uin: "",
-                    droneName: "",
-                    location: "",
-                    pilotName: "",
-                    owner: "",
-                    phone: "",
-                    droneStatus: "Active",
-                });
-            } else {
-                setMessage("Error: " + data.message);
-            }
         } catch (error) {
-            setMessage("Failed to connect to the server");
+            console.error("Error adding drone", error);
+            alert("Failed to add drone.");
         }
-        
         setLoading(false);
     };
 
     return (
-        <div className="p-6 bg-white rounded-lg shadow-md w-96 mx-auto mt-10">
-            <h2 className="text-xl font-semibold mb-4">Add a New Drone</h2>
-            {message && <p className="text-center text-red-500">{message}</p>}
+        <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+            <h2 className="text-2xl font-bold text-center mb-4">Add Drone</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label className="block text-gray-700">Unique ID (UIN)</label>
-                    <input 
-                        type="text" 
-                        name="uin" 
-                        value={drone.uin} 
-                        onChange={handleChange} 
-                        className="w-full p-2 border rounded-lg" 
-                        required 
-                    />
-                </div>
-                <div>
-                    <label className="block text-gray-700">Drone Name</label>
-                    <input 
-                        type="text" 
-                        name="droneName" 
-                        value={drone.droneName} 
-                        onChange={handleChange} 
-                        className="w-full p-2 border rounded-lg" 
-                        required 
-                    />
-                </div>
-                <div>
-                    <label className="block text-gray-700">Location</label>
-                    <input 
-                        type="text" 
-                        name="location" 
-                        value={drone.location} 
-                        onChange={handleChange} 
-                        className="w-full p-2 border rounded-lg" 
-                        required 
-                    />
-                </div>
-                <div>
-                    <label className="block text-gray-700">Pilot Name</label>
-                    <input 
-                        type="text" 
-                        name="pilotName" 
-                        value={drone.pilotName} 
-                        onChange={handleChange} 
-                        className="w-full p-2 border rounded-lg" 
-                        required 
-                    />
-                </div>
-                <div>
-                    <label className="block text-gray-700">Owner</label>
-                    <input 
-                        type="text" 
-                        name="owner" 
-                        value={drone.owner} 
-                        onChange={handleChange} 
-                        className="w-full p-2 border rounded-lg" 
-                        required 
-                    />
-                </div>
-                <div>
-                    <label className="block text-gray-700">Phone</label>
-                    <input 
-                        type="text" 
-                        name="phone" 
-                        value={drone.phone} 
-                        onChange={handleChange} 
-                        className="w-full p-2 border rounded-lg" 
-                        required 
-                    />
-                </div>
-                <div>
-                    <label className="block text-gray-700">Status</label>
-                    <select 
-                        name="droneStatus" 
-                        value={drone.droneStatus} 
-                        onChange={handleChange} 
-                        className="w-full p-2 border rounded-lg"
-                    >
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
-                        <option value="Repair">Repair</option>
-                        <option value="Crashed">Crashed</option>
-                    </select>
-                </div>
-                <button 
-                    type="submit" 
-                    className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
-                    disabled={loading}
-                >
+                {Object.keys(drone).map((key) => (
+                    <div key={key} className="flex flex-col">
+                        <label className="font-semibold capitalize">{key.replace(/([A-Z])/g, ' $1')}</label>
+                        {key === "gpsPositioning" ? (
+                            <input type="checkbox" name={key} checked={drone[key]} onChange={handleChange} className="mt-1" />
+                        ) : key === "image" ? (
+                            <input type="file" accept="image/*" onChange={handleImageChange} className="mt-1" />
+                        ) : (
+                            <input
+                                type={key.includes("Date") ? "date" : key.includes("phone") || key.includes("number") || key.includes("Weight") || key.includes("Capacity") ? "number" : "text"}
+                                name={key}
+                                value={drone[key]}
+                                onChange={handleChange}
+                                className="p-2 border rounded-lg"
+                                required
+                            />
+                        )}
+                    </div>
+                ))}
+                <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600" disabled={loading}>
                     {loading ? "Adding..." : "Add Drone"}
                 </button>
             </form>

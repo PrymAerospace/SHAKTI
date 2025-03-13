@@ -21,6 +21,9 @@ export const getAllDrones = async (req, res) => {
   }
 };
 
+
+
+
 // Get a single drone (full details)
 export const getDroneById = async (req, res) => {
   try {
@@ -56,6 +59,37 @@ export const deleteDrone = async (req, res) => {
     }
     res.status(200).json({ success: true, message: "Drone deleted successfully" });
   } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Get drone count by status
+export const getDroneStatus = async (req, res) => {
+  try {
+    console.log("Fetching drone status...");
+
+    // Test each count individually to identify the problem
+    const totalDrones = await Drone.countDocuments({});
+    console.log("Total Drones:", totalDrones);
+
+    const activeDrones = await Drone.countDocuments({ droneStatus: "Active" });
+    console.log("Active Drones:", activeDrones);
+
+    const repairDrones = await Drone.countDocuments({ droneStatus: "Repair" });
+    console.log("Repair Drones:", repairDrones);
+
+    const crashedDrones = await Drone.countDocuments({ droneStatus: "Crashed" });
+    console.log("Crashed Drones:", crashedDrones);
+
+    res.status(200).json({
+      success: true,
+      totalDrones,
+      activeDrones,
+      repairDrones,
+      crashedDrones,
+    });
+  } catch (error) {
+    console.error("Error in getDroneStatus:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

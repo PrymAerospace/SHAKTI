@@ -14,12 +14,12 @@ const ActiveDrones = () => {
       </div>
 
       {/* Drone Animation - Positioned at the bottom left */}
-      <div className="absolute bottom-4 left-4">
+      <div className="absolute bottom-2 left-4">
         <DroneAnimation />
       </div>
 
       {/* Other Data - Positioned at the bottom right */}
-      <div className="absolute bottom-5  left-80">
+      <div className="absolute bottom-2  left-80">
         <OtherData />
       </div>
     </div>

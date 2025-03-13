@@ -30,6 +30,7 @@ const DroneList = () => {
 
   const statusColors = {
     Active: "text-green-700 ",
+    Flying : "text-blue-400" ,
     Inactive: "text-gray-700",
     Repair: "text-yellow-700",
     Crashed: "text-red-700",
