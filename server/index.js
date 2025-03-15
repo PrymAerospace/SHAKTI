@@ -39,6 +39,19 @@ io.on("connection", (socket) => {
         console.log("A client disconnected:", socket.id);
     });
 });
+app.post("/webhook", (req, res) => {
+    console.log("Webhook received:", req.body);
+    res.status(200).send("Webhook received");
+
+    // 🔄 Auto-Pull Code from GitHub
+    exec("cd ~/SHAKTI && git pull && pm2 restart shakti-backend", (err, stdout, stderr) => {
+        if (err) {
+            console.error(`Git Pull Error: ${err.message}`);
+            return;
+        }
+        console.log(`Git Pull Output: ${stdout}`);
+    });
+});
 
 // Default route
 app.get("/", (req, res) => {
