@@ -59,7 +59,7 @@ const AddDrone = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            await axios.post("http://localhost:8000/api/drones", drone);
+            await axios.post("https://shakti-a.in/api/drones", drone);
             alert("Drone added successfully!");
             setDrone({
                 uin: "",

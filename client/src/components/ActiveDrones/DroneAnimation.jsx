@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { io } from "socket.io-client";
 
-const socket = io("http://192.168.31.68:9000"); // Replace with your backend WebSocket URL
+const socket = io("https://shakti-a.in"); // Replace with your backend WebSocket URL
 
 const DroneAnimation = () => {
   const [roll, setRoll] = useState(0);   // Roll - Sideways tilt

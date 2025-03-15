@@ -10,7 +10,7 @@ const DroneList = () => {
   useEffect(() => {
     const fetchDrones = async () => {
       try {
-        const response = await fetch("http://192.168.31.68:9000/api/drones");
+        const response = await fetch("https://shakti-a.in/api/drones");
         const data = await response.json();
 
         if (data.success) {

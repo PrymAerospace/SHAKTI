@@ -16,7 +16,7 @@ const Main = () => {
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const response = await fetch("http://192.168.31.68:9000/api/drones/status");
+        const response = await fetch("https://shakti-a.in/api/drones/status");
         const data = await response.json();
         if (data.success) {
           setStats(data);

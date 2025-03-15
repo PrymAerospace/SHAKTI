@@ -9,7 +9,7 @@ import { FaFileAlt } from "react-icons/fa";
 import { BsChevronRight, BsChevronLeft } from "react-icons/bs";
 import io from "socket.io-client"; // Import socket.io-client
 
-const socket = io("http://192.168.31.68:9000"); // Replace with your backend WebSocket URL
+const socket = io("https://shakti-a.in"); // Replace with your backend WebSocket URL
 
 const Sensorsdata = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,7 +29,7 @@ const Sensorsdata = () => {
   useEffect(() => {
     const fetchLatestData = async () => {
       try {
-        const response = await fetch("http://192.168.31.68:9000/api/sensors");
+        const response = await fetch("https://shakti-a.in/api/sensors");
         const data = await response.json();
         if (data.length > 0) {
           setSensorData({
